@@ -10,5 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY *.py .
 
+ENV OPTIONS="--periodic_alert"
 # Command to run the Python script
-CMD ["python", "main.py"]
+CMD ["python", "main.py", "$OPTIONS"]
