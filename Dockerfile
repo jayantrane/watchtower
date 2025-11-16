@@ -9,9 +9,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY *.py .
-COPY data/ ./data/
+#COPY data /app/data/
 
 ENV OPTIONS="--periodic_alert"
 # Command to run the Python script
-#CMD ["python", "main.py", "$OPTIONS"]
 CMD ["sh", "-c", "python3 main.py $OPTIONS"]

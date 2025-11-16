@@ -1,15 +1,17 @@
-from argparse import ArgumentParser
-from enum import Enum
-from logging import info, warning
-import random
-from sqlite3.dbapi2 import Timestamp
-from constants import ALERT_FREQUENCY, ALERT_TIME_WINDOW, CHAT_ID, LOG_FILE_DIR, TELEGRAM_BOT_TOKEN, DEVICE_IP, CHECK_INTERVAL
-import time
 import os
 import re
+import time
+from argparse import ArgumentParser
 from datetime import datetime, timedelta
+from logging import warning
 from queue import LifoQueue
+
 import requests
+
+from constants import (ALERT_FREQUENCY, ALERT_TIME_WINDOW, CHAT_ID,
+                       CHECK_INTERVAL, DEVICE_IP, LOG_FILE_DIR,
+                       TELEGRAM_BOT_TOKEN)
+
 
 class Stack:
     def __init__(self):
@@ -63,7 +65,9 @@ def _sliding_window(file_path):
     start_time = None
     last_time  = None
     count      = 0
+    print(f"Processing log file: {file_path}")
     with open(file_path, "r") as f:
+        print("Opened log file for reading...")
         for line in f:
             if DEVICE_IP in line:
                 current_time = extract_timestamp(line)
@@ -104,20 +108,18 @@ def main():
     if opts.eod:
         count = _sliding_window(file_path)
         print(f"Device {DEVICE_IP} was online for {count} minutes in the log period.")
-        #count = _stack_solution(LOG_FILE_PATH)
 
     if opts.periodic_alert:
+        print("Starting periodic alert monitoring...")
         while True:
             _, last_window_time = _sliding_window(file_path)
-            print(f"Last window time: {last_window_time} minutes")
             if (last_window_time >= ALERT_TIME_WINDOW):
                 message = f"Alert: You have been watching TV for {last_window_time} minutes! \n" \
                           f"Be mindful, you have goals to achieve! 📺🚀"
 
                 send_message_to_telegram(message)
-                print(f"Sent alert: {message}")
-
             time.sleep(ALERT_FREQUENCY * 60)
+
 
 if __name__ == "__main__":
     main()
