@@ -9,6 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY *.py .
+RUN mkdir data
 #COPY data /app/data/
 
 ENV OPTIONS="--periodic_alert"

@@ -12,26 +12,6 @@ from constants import (ALERT_FREQUENCY, ALERT_TIME_WINDOW, CHAT_ID,
                        CHECK_INTERVAL, DEVICE_IP, LOG_FILE_DIR,
                        TELEGRAM_BOT_TOKEN)
 
-
-class Stack:
-    def __init__(self):
-        self.items = LifoQueue()
-
-    def push(self, item):
-        self.items.put(item)
-
-    def pop(self):
-        return self.items.get() if not self.items.empty() else None
-
-    def peek(self):
-        if self.items.empty():
-            return None
-        return self.items.queue[-1]  # Direct access to underlying deque
-
-    def is_empty(self):
-        return self.items.empty()
-    
-
 # Regex to extract the timestamp portion (e.g., "Nov 15 21:06:44")
 pattern = r'([A-Za-z]{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})'
 
@@ -50,6 +30,7 @@ def extract_timestamp(log_line):
         warning("No timestamp found.")
         return None
 
+
 def send_message_to_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
@@ -60,6 +41,7 @@ def send_message_to_telegram(message):
     response = requests.post(url, data=payload)
     if response.status_code != 200:
         warning(f"Failed to send message: {response.text}")
+
 
 def _sliding_window(file_path):
     start_time = None
@@ -87,6 +69,7 @@ def _sliding_window(file_path):
 
     return count, last_window_time
 
+
 def parse_args():
     parser = ArgumentParser(description="Device Online Time Checker")
     parser.add_argument(
@@ -104,7 +87,11 @@ def parse_args():
 
 def main():
     opts = parse_args()
+    print(f"ENV: {os.environ}")
+    print(f"Options: {opts}")
     file_path = os.path.join(LOG_FILE_DIR, opts.file_name)
+    print(f"Log file path: {file_path}")
+
     if opts.eod:
         count = _sliding_window(file_path)
         print(f"Device {DEVICE_IP} was online for {count} minutes in the log period.")

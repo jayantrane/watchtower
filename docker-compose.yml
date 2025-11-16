@@ -1,0 +1,13 @@
+services:
+  watchtower:
+    image: jayantrane/watchtower:1.0
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - DEVICE_IP=${DEVICE_IP}
+      - CHAT_ID=${CHAT_ID}
+      - CHECK_INTERVAL=${CHECK_INTERVAL}
+      - LOG_FILE_DIR=${LOG_FILE_DIR}
+      - ALERT_FREQUENCY=${ALERT_FREQUENCY}
+      - ALERT_TIME_WINDOW=${ALERT_TIME_WINDOW}
