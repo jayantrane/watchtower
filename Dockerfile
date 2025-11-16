@@ -5,9 +5,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the entire project directory and install dependencies
-COPY . .
+COPY requirements .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY *.py .
 
 # Command to run the Python script
 CMD ["python", "main.py"]
