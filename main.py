@@ -3,7 +3,7 @@ from enum import Enum
 from logging import info, warning
 import random
 from sqlite3.dbapi2 import Timestamp
-from constants import ALERT_FREQUENCY, ALERT_TIME_WINDOW, CHAT_ID, LOG_FILE_DIR, TELEGRATM_BOT_TOKEN, DEVICE_IP, CHECK_INTERVAL
+from constants import ALERT_FREQUENCY, ALERT_TIME_WINDOW, CHAT_ID, LOG_FILE_DIR, TELEGRAM_BOT_TOKEN, DEVICE_IP, CHECK_INTERVAL
 import time
 import os
 import re
@@ -49,7 +49,7 @@ def extract_timestamp(log_line):
         return None
 
 def send_message_to_telegram(message):
-    url = f"https://api.telegram.org/bot{TELEGRATM_BOT_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
         "text": message
@@ -65,8 +65,8 @@ def _sliding_window(file_path):
     count      = 0
     with open(file_path, "r") as f:
         for line in f:
-            current_time = extract_timestamp(line)
             if DEVICE_IP in line:
+                current_time = extract_timestamp(line)
                 if start_time is None:
                     start_time = last_time = current_time
 
@@ -76,6 +76,7 @@ def _sliding_window(file_path):
                 
                 last_time = current_time
 
+    last_window_time = 0
     if start_time is not None and last_time is not None:
         last_window_time =  (last_time - start_time).total_seconds() // 60
         count = count + last_window_time
@@ -99,23 +100,24 @@ def parse_args():
 
 def main():
     opts = parse_args()
-    print(opts)
     file_path = os.path.join(LOG_FILE_DIR, opts.file_name)
     if opts.eod:
         count = _sliding_window(file_path)
-        info(f"Device {DEVICE_IP} was online for {count} minutes in the log period.")
+        print(f"Device {DEVICE_IP} was online for {count} minutes in the log period.")
         #count = _stack_solution(LOG_FILE_PATH)
 
     if opts.periodic_alert:
         while True:
             _, last_window_time = _sliding_window(file_path)
+            print(f"Last window time: {last_window_time} minutes")
             if (last_window_time >= ALERT_TIME_WINDOW):
-                message = f"Alert: You have been watching TV for {last_window_time} minutes! \n " \
+                message = f"Alert: You have been watching TV for {last_window_time} minutes! \n" \
                           f"Be mindful, you have goals to achieve! 📺🚀"
 
                 send_message_to_telegram(message)
-                info(f"Sent alert: {message}")
-                time.sleep(ALERT_FREQUENCY * 60)
+                print(f"Sent alert: {message}")
+
+            time.sleep(ALERT_FREQUENCY * 60)
 
 if __name__ == "__main__":
     main()
