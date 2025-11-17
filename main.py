@@ -95,8 +95,8 @@ def main():
     if opts.eod:
         count, _ = _sliding_window(file_path)
         print(f"Device {DEVICE_IP} was online for {count} minutes in the log period.")
-        message = "Last day you have watched TV for {count} minutes! \n" \
-                  "Remember to take breaks and stay productive! 📺🚀"
+        message = f"Last day you have watched TV for {count} minutes! \n" \
+                  f"Remember to take breaks and stay productive! 📺🚀"
         send_message_to_telegram(message)
 
     if opts.periodic_alert:
