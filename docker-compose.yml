@@ -11,3 +11,4 @@ services:
       - LOG_FILE_DIR=${LOG_FILE_DIR}
       - ALERT_FREQUENCY=${ALERT_FREQUENCY}
       - ALERT_TIME_WINDOW=${ALERT_TIME_WINDOW}
+    restart: unless-stopped
